@@ -1,0 +1,67 @@
+image: docker:19.03.12
+
+stages:
+  - testing
+  - release
+
+variables:
+  GITLABCI_VERSION:    "2.1"
+  GITLABCI_IMAGE:      $CI_REGISTRY_IMAGE:$GITLABCI_VERSION
+  CONTRIBUTOR_IMAGE:   "domjudge/domjudge-contributor"
+
+.job_template: &job_check-pr
+  stage: testing
+  services:
+    - docker:19.03.12-dind
+  except:
+    - master
+
+check-pr-ci:
+  <<: *job_check-pr
+  only:
+    changes:
+      - docker-gitlabci/*
+  script:
+    - cd docker-gitlabci
+    - ./build.sh $GITLABCI_VERSION
+
+check-pr-contributor:
+  <<: *job_check-pr
+  only:
+    changes:
+      - docker-contributor/*
+  script:
+    - cd docker-contributor
+    - docker build .
+
+.release_template: &release_docker
+  environment: maintainer-approved
+  stage: release
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+release-ci:
+  <<: *release_docker
+  only:
+    refs:
+      - master
+    changes:
+      - docker-gitlabci/*
+  script:
+    - cd docker-gitlabci
+    - ./build.sh $GITLABCI_VERSION
+    - docker push $GITLABCI_IMAGE
+
+release-contributor:
+  <<: *release_docker
+  only:
+    refs:
+      - master
+    changes:
+      - docker-contributor/*
+  script:
+    - cd docker-contributor
+    - docker build -t $CONTRIBUTOR_IMAGE
+    - docker push $CONTRIBUTOR_IMAGE
+
+
