@@ -8,6 +8,7 @@ variables:
   GITLABCI_VERSION:    "2.1"
   GITLABCI_IMAGE:      $CI_REGISTRY_IMAGE:$GITLABCI_VERSION
   CONTRIBUTOR_IMAGE:   "domjudge/domjudge-contributor"
+  HUB_REGISTRY:        "https://hub.docker.com/"
 
 .job_template: &job_check-pr
   stage: testing
@@ -37,11 +38,19 @@ check-pr-contributor:
 .release_template: &release_docker
   environment: maintainer-approved
   stage: release
+
+.registry_template: &registry_gitlab
+  <<: *release_docker
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
-release-ci:
+.registry_template: &registry_dockerhub
   <<: *release_docker
+  before_script:
+    - docker login -u $HUB_REGISTRY_USER -p $HUB_REGISTRY_PASSWORD $HUB_REGISTRY
+
+release-ci:
+  <<: *registry_gitlab
   only:
     refs:
       - master
@@ -53,7 +62,7 @@ release-ci:
     - docker push $GITLABCI_IMAGE
 
 release-contributor:
-  <<: *release_docker
+  <<: *registry_gitlab
   only:
     refs:
       - master
@@ -64,4 +73,21 @@ release-contributor:
     - docker build -t $CONTRIBUTOR_IMAGE
     - docker push $CONTRIBUTOR_IMAGE
 
+release-DOMjudge:
+  <<: *registry_dockerhub
+  only:
+    refs:
+      - master
+    changes:
+      - docker/*
+  script:
+    - cd docker
+    - ./build.sh $DOMJUDGE_VERSION
+    - >
+      for $IMG in "domserver" "judgehost" "default-judgehost-chroot"; do
+        docker push domjudge/$IMG:$DOMJUDGE_VERSION
+        if [ ! -z ${LATEST} ]; then
+          docker push domjudge/$IMG:latest
+        fi
+      done
 
