@@ -36,7 +36,6 @@ check-pr-contributor:
     - docker build .
 
 .release_template: &release_docker
-  environment: maintainer-approved
   stage: release
 
 .registry_template: &registry_gitlab
@@ -58,7 +57,7 @@ release-ci:
       - docker-gitlabci/*
   script:
     - cd docker-gitlabci
-    - ./build.sh $GITLABCI_VERSION
+    - sh ./build.sh $GITLABCI_VERSION
     - docker push $GITLABCI_IMAGE
 
 release-contributor:
