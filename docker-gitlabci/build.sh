@@ -15,12 +15,17 @@ then
 fi
 
 echo "[..] Building Docker image for Gitlab CI..."
-#cp -r ../docker-contributor/php-config ./
-#docker build -t domjudge/gitlabci:${VERSION} . 
-#rm -r php-config
-#echo "[ok] Done building Docker image for Gitlab CI"
-#
-#echo "All done. Image domjudge/gitlabci:${VERSION} created"
-#echo "If you are a DOMjudge maintainer with access to the domjudge organization on Docker Hub, you can now run the following command to push them to Docker Hub:"
-#echo "$ docker push domjudge/gitlabci:${VERSION}"
-#echo "You probably will want to update .gitlab-ci.yml to point to this new image in the DOMjudge/domjudge repository."
+cp -r ../docker-contributor/php-config ./
+docker build -t domjudge/gitlabci:${VERSION} . 
+rm -r php-config
+echo "[ok] Done building Docker image for Gitlab CI"
+
+if [[ -z ${CI} ]]
+then
+        echo "All done. Image domjudge/gitlabci:${VERSION} created"
+        echo "If you are a DOMjudge maintainer with access to the domjudge organization on Docker Hub, you can now run the following command to push them to Docker Hub:"
+        echo "$ docker push domjudge/gitlabci:${VERSION}"
+        echo "You probably will want to update .gitlab-ci.yml to point to this new image in the DOMjudge/domjudge repository."
+else
+	echo "When this is not a PR, we will try to upload this to the GitLab registry."
+fi
