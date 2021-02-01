@@ -1,5 +1,8 @@
 #!/bin/bash -e
 
+set -euxo pipefail
+export PS4='(${BASH_SOURCE}:${LINENO}): - [$?] $ '
+
 VERSION=$1
 if [[ -z ${VERSION} ]]
 then
