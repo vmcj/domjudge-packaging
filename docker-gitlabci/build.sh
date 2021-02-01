@@ -3,7 +3,7 @@
 if [[ ! -z ${CI} ]]
 then
         set -euxo pipefail
-        export PS4='(${BASH_SOURCE}:${LINENO}): - [$?] $ '
+        export PS4='(${0}:${LINENO}): - [$?] $ '
 fi
 
 VERSION=$1
