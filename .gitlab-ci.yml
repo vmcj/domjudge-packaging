@@ -24,7 +24,7 @@ check-pr-ci:
       - docker-gitlabci/*
   script:
     - cd docker-gitlabci
-    - ./build.sh $GITLABCI_VERSION
+    - sh ./build.sh $GITLABCI_VERSION
 
 check-pr-contributor:
   <<: *job_check-pr
