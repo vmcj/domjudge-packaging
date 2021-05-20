@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:groovy-20210416
 LABEL maintainer="DOMjudge team <team@domjudge.org>"
 
 ENV DEBIAN_FRONTEND=noninteractive \
