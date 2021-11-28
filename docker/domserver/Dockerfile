@@ -1,4 +1,4 @@
-FROM debian:latest AS domserver-build
+FROM debian:stable-slim AS domserver-build
 MAINTAINER DOMjudge team <team@domjudge.org>
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -12,10 +12,9 @@ RUN apt-get update \
 	php-gd php-curl php-mysql php-json php-intl \
 	php-gmp php-xml php-mbstring \
 	sudo bsdmainutils ntp libcgroup-dev procps \
-	linuxdoc-tools linuxdoc-tools-text groff \
 	python3-sphinx python3-sphinx-rtd-theme python3-pip fontconfig python3-yaml \
 	texlive-latex-recommended texlive-latex-extra \
-	texlive-fonts-recommended texlive-lang-european \
+	texlive-fonts-recommended texlive-lang-european latexmk \
 	libcurl4-gnutls-dev libjsoncpp-dev libmagic-dev \
 	enscript lpr ca-certificates \
 	&& rm -rf /var/lib/apt/lists/*
@@ -27,21 +26,19 @@ RUN pip3 install pygments rst2pdf
 RUN useradd -m domjudge
 
 # Install composer
-RUN apt-get update && \
-    apt-get install --no-install-recommends --no-install-suggests -y ca-certificates \
-	&& rm -rf /var/lib/apt/lists/* \
-    && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && php composer-setup.php \
-    && mv /composer.phar /usr/local/bin/composer
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+	&& php composer-setup.php \
+	&& mv /composer.phar /usr/local/bin/composer
 
 # Add DOMjudge source code and build script
 ADD domjudge.tar.gz /domjudge-src
-ADD domserver/build.sh /domjudge-src
+COPY domserver/build.sh /domjudge-src/build.sh
 
 # Build and install domserver
 RUN /domjudge-src/build.sh
 
 # Now create an image with the actual build in it
-FROM debian:latest
+FROM debian:stable-slim
 MAINTAINER DOMjudge team <team@domjudge.org>
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -62,38 +59,30 @@ RUN apt-get update \
 	php-gd php-curl php-mysql php-json php-intl \
 	php-gmp php-xml php-mbstring php-ldap \
 	enscript lpr \
+	ca-certificates python3-yaml \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Install composer
-RUN apt-get update && \
-    apt-get install --no-install-recommends --no-install-suggests -y ca-certificates \
-	&& rm -rf /var/lib/apt/lists/* \
-    && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && php composer-setup.php \
-    && mv /composer.phar /usr/local/bin/composer
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+	&& php composer-setup.php \
+	&& mv /composer.phar /usr/local/bin/composer
 
-# Copy domserver directory and add script files
+# Copy domserver
 COPY --from=domserver-build /opt/domjudge/domserver /opt/domjudge/domserver
 COPY --from=domserver-build /opt/domjudge/doc /opt/domjudge/doc
-COPY ["domserver/scripts", "/scripts/"]
 
-# Add user, create PHP FPM socket dir, change permissions for domjudge directory and fix scripts
-RUN useradd -m domjudge \
-	&& mkdir -p /run/php \
-	&& chown -R domjudge: /opt/domjudge \
-	&& chown -R www-data: /opt/domjudge/domserver/tmp \
-	# for DOMjudge <= 7.2 (submitdir was removed in commit DOMjudge/domjudge@d66725038)
-	&& if [ -d /opt/domjudge/domserver/submissions ]; then chown -R www-data: /opt/domjudge/domserver/submissions; fi \
-	&& chmod 755 /scripts/start.sh \
-	&& chmod 755 /scripts/bin/* \
-	&& ln -s /scripts/bin/* /usr/bin/
+# Copy scripts
+COPY domserver/scripts /scripts/
+COPY domserver/supervisor /etc/supervisor/conf.d/
 
 # Make the scripts available to the root user
 ENV PATH="$PATH:/opt/domjudge/domserver/bin"
 
-CMD ["/scripts/start.sh"]
-
-# Copy supervisor files
-COPY ["domserver/supervisor", "/etc/supervisor/conf.d/"]
+# Run customizations
+COPY domserver/configure.sh /configure.sh
+RUN chmod 700 /configure.sh && /configure.sh && rm -f /configure.sh
 
 # Expose HTTP port
 EXPOSE 80
+
+CMD ["/scripts/start.sh"]

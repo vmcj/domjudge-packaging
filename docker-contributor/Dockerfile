@@ -1,4 +1,5 @@
-FROM ubuntu:focal
+ARG ARCH=
+FROM ${ARCH}ubuntu:focal
 LABEL maintainer="DOMjudge team <team@domjudge.org>"
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -15,7 +16,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 # Install required packages and clean up afterwards to make this image layer smaller
 RUN apt-get update \
     && apt-get install --no-install-recommends --no-install-suggests -y \
-    autoconf automake git acl \
+    dumb-init autoconf automake git acl \
     gcc g++ make zip unzip mariadb-client \
     nginx php7.4 php7.4-cli php7.4-fpm php7.4-zip \
     php7.4-gd php7.4-curl php7.4-mysql php7.4-json php7.4-intl \
@@ -24,7 +25,7 @@ RUN apt-get update \
     linuxdoc-tools linuxdoc-tools-text groff \
     python3-sphinx python3-sphinx-rtd-theme python3-pip fontconfig python3-yaml \
     texlive-latex-recommended texlive-latex-extra \
-    texlive-fonts-recommended texlive-lang-european \
+    texlive-fonts-recommended texlive-lang-european latexmk \
     sudo debootstrap libcgroup-dev procps \
     default-jre-headless \
     default-jdk ghc fp-compiler \
@@ -46,8 +47,7 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log \
 # Set up users
 RUN useradd -m domjudge \
   && groupadd domjudge-run \
-  && useradd -d /nonexistent -g nogroup -s /bin/false domjudge-run-0 \
-  && useradd -d /nonexistent -g nogroup -s /bin/false domjudge-run-1
+  && for id in `seq 0 4`; do useradd -d /nonexistent -g nogroup -s /bin/false domjudge-run-$id; done
 
 # Install composer
 RUN apt-get update && \
@@ -73,10 +73,14 @@ COPY ["scripts", "/scripts/"]
 RUN chmod 755 /scripts/start.sh \
   && chmod 755 /scripts/bin/* \
   && ln -s /scripts/bin/* /usr/bin/
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["/scripts/start.sh"]
 
 # Copy supervisor files
+COPY ["supervisord.conf", "/etc/supervisor/"]
 COPY ["supervisor", "/etc/supervisor/conf.d/"]
+COPY ["sudoers-domjudge", "/etc/sudoers.d/domjudge"]
+RUN chmod 440 /etc/sudoers.d/domjudge
 
 # Expose HTTP port
 EXPOSE 80
