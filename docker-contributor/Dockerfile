@@ -60,7 +60,7 @@ RUN apt update && \
 # Install all supported PHP versions
 RUN add-apt-repository ppa:ondrej/php -y && \
     apt update && \
-    alias aptinstall='apt install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"' && \
+    alias aptinstall="apt install -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'" && \
     PACKAGES=$(dpkg-query -f '${binary:Package}\n' -W|grep "^php.*-")
 RUN for VERSION in $PHPSUPPORTED; do \
         aptinstall php${VERSION}; \
