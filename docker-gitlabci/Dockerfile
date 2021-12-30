@@ -50,8 +50,8 @@ RUN add-apt-repository ppa:ondrej/php -y; apt update \
     for version in $PHPSUPPORTED; do \
         aptinstall php${version} && \
         for package in $PACKAGES; do \
-            aptinstall php${version}-${package#php*-} \
-        done \
+            aptinstall php${version}-${package#php*-}; \
+        done; \
     done && update-alternatives --set php /usr/bin/php7.4
 
 # Enable pcov (code coverage) in PHP
