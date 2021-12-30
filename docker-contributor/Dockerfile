@@ -60,17 +60,18 @@ RUN apt update && \
 # Install all supported PHP versions
 RUN add-apt-repository ppa:ondrej/php -y && \
     apt update && \
-    alias aptinstall="apt install -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'" && \
-    PACKAGES=$(dpkg-query -f '${binary:Package}\n' -W|grep "^php.*-") && \
-    for VERSION in $PHPSUPPORTED; do \
+    alias aptinstall='apt install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"' && \
+    PACKAGES=$(dpkg-query -f '${binary:Package}\n' -W|grep "^php.*-")
+RUN for VERSION in $PHPSUPPORTED; do \
         aptinstall php${VERSION}; \
-    done && \
-    for PACKAGE in $PACKAGES; do \
+    done
+RUN for PACKAGE in $PACKAGES; do \
     	PACKAGEALLVERSIONS=() && \
 	for VERSION in $PHPSUPPORTED; do \
-		PACKAGEALLVERSIONS+=( php${VERSION}-${PACKAGE#php*-} ); \
+	    PACKAGEALLVERSIONS+=( php${VERSION}-${PACKAGE#php*-} ); \
 	done; \
-    done && update-alternatives --set php /usr/bin/php7.4
+    done
+RUN update-alternatives --set php /usr/bin/php7.4
 
 # Add exposed volume
 VOLUME ["/domjudge"]
