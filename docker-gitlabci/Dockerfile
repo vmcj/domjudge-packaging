@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PHPSUPPORTED="7.2 7.3 8.0 8.1"
-RUN apt-get update && apt-get install -y \
+RUN apt update && apt install -y \
   acl make zip unzip apache2-utils bsdmainutils libcurl4-gnutls-dev \
   libjsoncpp-dev libmagic-dev autoconf automake bats sudo debootstrap procps \
   gcc g++ default-jre-headless default-jdk ghc fp-compiler libcgroup-dev \
@@ -34,8 +34,8 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/*
 
 # Install composer
-RUN apt-get update && \
-    apt-get install --no-install-recommends --no-install-suggests -y ca-certificates \
+RUN apt update && \
+    apt install --no-install-recommends --no-install-suggests -y ca-certificates \
 	&& rm -rf /var/lib/apt/lists/* \
     && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && php composer-setup.php \
     && mv /composer.phar /usr/local/bin/composer
@@ -44,7 +44,7 @@ RUN apt-get update && \
 RUN composer -n require justinrainbow/json-schema
 
 # Install other PHP versions
-RUN add-apt-repository ppa:ondrej/php -y; apt update \
+RUN add-apt-repository ppa:ondrej/php -y && apt update && \
     alias aptinstall="apt install -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'" && \
     PACKAGES=$(dpkg-query -f '${binary:Package}\n' -W|grep "^php.*-") && \
     for version in $PHPSUPPORTED; do \
