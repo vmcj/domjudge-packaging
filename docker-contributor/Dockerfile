@@ -64,7 +64,7 @@ RUN add-apt-repository ppa:ondrej/php -y && \
     PACKAGES=$(dpkg-query -f '${binary:Package}\n' -W|grep "^php.*-") && \
     for VERSION in $PHPSUPPORTED; do \
         aptinstall php${VERSION}; \
-    done &&
+    done && \
     for PACKAGE in $PACKAGES; do \
     	PACKAGEALLVERSIONS=() && \
 	for VERSION in $PHPSUPPORTED; do \
