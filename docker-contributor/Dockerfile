@@ -11,7 +11,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
   MYSQL_ROOT_PASSWORD=domjudge \
   FPM_MAX_CHILDREN=40 \
   DJ_SKIP_MAKE=0 \
-  DJ_DB_INSTALL_BARE=0
+  DJ_DB_INSTALL_BARE=0 \
+  PHPSUPPORTED="7.2 7.3 8.0 8.1"
 
 # Install required packages and clean up afterwards to make this image layer smaller
 RUN apt-get update \
@@ -56,6 +57,22 @@ RUN apt-get update && \
     && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && php composer-setup.php \
     && mv /composer.phar /usr/local/bin/composer
 
+# Install all supported PHP versions
+RUN add-apt-repository ppa:ondrej/php -y && \
+    apt update && \
+    alias aptinstall="apt install -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'" && \
+    PACKAGES=$(dpkg-query -f '${binary:Package}\n' -W|grep "^php.*-") && \\
+    for VERSION in $PHPSUPPORTED; do \\
+        aptinstall php${VERSION} && \\
+    done
+    for PACKAGE in $PACKAGES; do \\
+    	PACKAGEALLVERSIONS=() && \\
+	for VERSION in $PHPSUPPORTED; do \\
+		PACKAGEALLVERSIONS+=( php${VERSION}-${PACKAGE#php*-} ) && \\
+	done && \\
+    done && \\
+    update-alternatives --set php /usr/bin/php7.4
+
 # Add exposed volume
 VOLUME ["/domjudge"]
 
@@ -64,6 +81,12 @@ WORKDIR /domjudge
 # Add PHP configuration
 COPY ["php-config", "//etc/php/7.4/fpm/conf.d"]
 COPY ["php-config", "//etc/php/7.4/cli/conf.d"]
+RUN for VERSION in $PHPSUPPORTED; do \\
+	for DIR in fpm cli; do
+	    cp /etc/php/7.4/$DIR/conf.d/* /etc/php/$VERSION/$DIR/conf.d/ && \\
+	done && \\
+    done
+
 
 # Disable Xdebug by default
 RUN phpdismod xdebug
