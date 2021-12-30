@@ -46,13 +46,13 @@ RUN composer -n require justinrainbow/json-schema
 # Install other PHP versions
 RUN add-apt-repository ppa:ondrej/php -y; apt update \
     alias aptinstall="apt install -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'" && \
-    PACKAGES=$(dpkg-query -f '${binary:Package}\n' -W|grep "^php-") && \
+    PACKAGES=$(dpkg-query -f '${binary:Package}\n' -W|grep "^php.*-") && \
     for version in $PHPSUPPORTED; do \
-        aptinstall php${version} \
+        aptinstall php${version} && \
         for package in $PACKAGES; do \
-            aptinstall php${version}-${package#php-} \
+            aptinstall php${version}-${package#php*-} \
         done \
-    done
+    done && update-alternatives --set php /usr/bin/php7.4
 
 # Enable pcov (code coverage) in PHP
 COPY php-config/30-pcov.ini /etc/php/7.4/cli/conf.d/
