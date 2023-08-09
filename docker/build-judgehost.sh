@@ -19,4 +19,4 @@ docker rm -f "${builder_name}"
 docker rmi "${docker_tag}-build"
 
 # Build actual judgehost
-docker build -t "${docker_tag}" -f judgehost/Dockerfile .
+#docker build -t "${docker_tag}" -f judgehost/Dockerfile-alpine .
