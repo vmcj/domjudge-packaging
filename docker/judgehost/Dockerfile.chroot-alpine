@@ -1,0 +1,21 @@
+FROM alpine:latest
+LABEL org.opencontainers.image.authors="DOMjudge team <team@domjudge.org>"
+RUN apk add --no-cache \
+  openjdk17-jre-headless
+RUN apk add --no-cache \
+  pypy3 --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/
+
+#RUN chmod a-s \
+#  /usr/bin/wall \
+#  /usr/bin/newgrp \
+#  /usr/bin/chage \
+#  /usr/bin/chfn \
+#  /usr/bin/chsh \
+#  /usr/bin/expiry \
+#  /usr/bin/gpasswd \
+#  /usr/bin/passwd \
+#  /bin/su \
+#  /bin/mount \
+#  /bin/umount \
+#  /sbin/unix_chkpwd \
+#  || true

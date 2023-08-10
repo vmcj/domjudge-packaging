@@ -1,0 +1,23 @@
+#!/bin/sh -eu
+
+if [ "$#" -ne 1 ]
+then
+        echo "Usage $0 <docker tag>"
+fi
+docker_tag="$1"
+
+# Build the builder
+docker build -t "${docker_tag}-build" -f judgehost/Dockerfile.build-alpine .
+
+# Build chroot
+builder_name=$(echo "${docker_tag}" | sed 's/[^a-zA-Z0-9_-]/-/g')
+echo "Using: ${builder_name}, ${docker_tag}"
+docker rm -f "${builder_name}" > /dev/null 2>&1 || true
+docker run --privileged --name "${builder_name}" "${docker_tag}-build"
+docker cp "${builder_name}:/chroot.tar.gz" .
+docker cp "${builder_name}:/judgehost.tar.gz" .
+docker rm -f "${builder_name}"
+docker rmi "${docker_tag}-build"
+
+# Build actual judgehost
+docker build -t "${docker_tag}" -f judgehost/Dockerfile-alpine .

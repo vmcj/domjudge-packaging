@@ -39,7 +39,7 @@ echo "[ok] Done building Docker image for judgehost"
 
 echo "[..] Building Docker image for judgehost chroot..."
 #docker build -t "vmcj/default-judgehost-chroot:${VERSION}" -f judgehost/Dockerfile.chroot .
-#docker build -t "vmcj/default-judgehost-chroot-alpine:${VERSION}" -f judgehost/Dockerfile.chroot-alpine .
+docker build -t "vmcj/default-judgehost-chroot-alpine:${VERSION}" -f judgehost/Dockerfile.chroot-alpine .
 echo "[ok] Done building Docker image for judgehost chroot"
 
 #echo "All done. Image domjudge/domserver:${VERSION} and domjudge/judgehost:${VERSION} created"
