@@ -14,6 +14,9 @@ then
 fi
 
 VERSION="$1"
+DOMSERVER="$2"
+JUDGEHOST="$3"
+CHROOT="$4"
 
 URL=https://www.domjudge.org/releases/domjudge-${VERSION}.tar.gz
 FILE=domjudge.tar.gz
@@ -28,26 +31,39 @@ echo "[..] Downloading DOMjudge version ${VERSION}..."
 
 echo "[ok] DOMjudge version ${VERSION} downloaded as domjudge.tar.gz"; echo
 
+if [ "$DOMSERVER" = "domserver"]; then
 #echo "[..] Building Docker image for domserver..."
-#./build-domjudge-alpine.sh "vmcj/domserver-alpine:${VERSION}"
+#./build-domjudge-alpine.sh "mvr320/domserver-alpine:${VERSION}"
 #echo "[ok] Done building Docker image for domserver"
+#docker push mvr320/domserver:${VERSION}
+#docker tag mvr320/domserver:${VERSION} domjudge/domserver:latest
+#docker push mvr320/domserver:latest
+fi
 
-echo "[..] Building Docker image for judgehost using intermediate build image..."
-#./build-judgehost.sh "vmcj/judgehost:${VERSION}"
-./build-judgehost-alpine.sh "vmcj/judgehost-alpine:${VERSION}"
-echo "[ok] Done building Docker image for judgehost"
+if [ "$JUDGEHOST" = "judgehost"]; then
+#echo "[..] Building Docker image for judgehost using intermediate build image..."
+#./build-judgehost.sh "mvr320/judgehost:${VERSION}"
+#./build-judgehost-alpine.sh "mvr320/judgehost-alpine:${VERSION}"
+#echo "[ok] Done building Docker image for judgehost"
+#docker push mvr320/judgehost:${VERSION}
+#docker tag mvr320/judgehost:${VERSION} domjudge/judgehost:latest
+#docker push mvr320/judgehost:latest
+fi
 
-echo "[..] Building Docker image for judgehost chroot..."
-#docker build -t "vmcj/default-judgehost-chroot:${VERSION}" -f judgehost/Dockerfile.chroot .
-docker build -t "vmcj/default-judgehost-chroot-alpine:${VERSION}" -f judgehost/Dockerfile.chroot-alpine .
-echo "[ok] Done building Docker image for judgehost chroot"
+if [ "$CHROOT" = "chroot"]; then
+#echo "[..] Building Docker image for judgehost chroot..."
+#docker build -t "mvr320/default-judgehost-chroot:${VERSION}" -f judgehost/Dockerfile.chroot .
+#docker build -t "mvr320/default-judgehost-chroot-alpine:${VERSION}" -f judgehost/Dockerfile.chroot-alpine .
+#echo "[ok] Done building Docker image for judgehost chroot"
+docker push mvr320/default-judgehost-chroot:${VERSION}
+#docker tag mvr320/default-judgehost-chroot:${VERSION} mvr320/default-judgehost-chroot:latest
+#docker push mvr320/default-judgehost-chroot:latest"
+fi
 
-#echo "All done. Image domjudge/domserver:${VERSION} and domjudge/judgehost:${VERSION} created"
-
-#echo "If you are a DOMjudge maintainer with access to the domjudge organization on Docker Hub, you can now run the following command to push them to Docker Hub:"
-#echo "$ docker push domjudge/domserver:${VERSION} && docker push domjudge/judgehost:${VERSION} && docker push domjudge/default-judgehost-chroot:${VERSION}"
-#echo "If this is the latest release, also run the following command:"
-#echo "$ docker tag domjudge/domserver:${VERSION} domjudge/domserver:latest && \
-#docker tag vmcj/judgehost:${VERSION} domjudge/judgehost:latest && \
-#docker tag domjudge/default-judgehost-chroot:${VERSION} domjudge/default-judgehost-chroot:latest && \
-#docker push domjudge/domserver:latest && docker push domjudge/judgehost:latest && docker push domjudge/default-judgehost-chroot:latest"
+if [ "$DOMSERVER" = "domserver"]; then
+if [ "$JUDGEHOST" = "judgehost"]; then
+if [ "$CHROOT" = "chroot"]; then
+echo "All done. Image domjudge/domserver:${VERSION} and domjudge/judgehost:${VERSION} created"
+fi
+fi
+fi

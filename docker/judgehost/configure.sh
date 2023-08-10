@@ -1,6 +1,7 @@
-#!/bin/bash -e
+#!/bin/sh
+set -e
 
-useradd -m domjudge
+useradd -m domjudge || adduser -D domjudge
 chown -R domjudge: /opt/domjudge
 
 chmod 755 /scripts/start.sh
