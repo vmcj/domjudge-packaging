@@ -1,0 +1,27 @@
+name: 'Build docker containers'
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  pull_request_target:
+    branches:
+      - main
+
+jobs:
+  pr-docker-contributor:
+    name: PR Docker contributor image
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [amd64, arm64v8]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build container for $arch
+        run: |
+          cd docker-contributor
+          docker build --build-arg ARCH=${ARCH}/ .
+
