@@ -20,8 +20,28 @@ jobs:
         arch: [amd64, arm64v8]
     steps:
       - uses: actions/checkout@v2
-      - name: Build container for $arch
+      - name: Build container for ${{ matrix.arch }}
         run: |
           cd docker-contributor
           docker build --build-arg ARCH=${{ matrix.arch }}/ .
+
+  pr-docker-contributor:
+    name: PR Docker contributor image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build container for hardcoded amd64
+        run: |
+          cd docker-contributor
+          docker build --build-arg ARCH=amd64/ .
+
+  pr-docker-contributor:
+    name: PR Docker contributor image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build container for hardcoded arm64v8
+        run: |
+          cd docker-contributor
+          docker build --build-arg --platform linux/arm64 ARCH=arm64v8/ .
 
