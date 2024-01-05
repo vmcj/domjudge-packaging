@@ -22,10 +22,11 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build container for ${{ matrix.arch }}
         run: |
+          sudo apt update; sudo apt install docker-buildx-plugin
           cd docker-contributor
           docker build --build-arg ARCH=${{ matrix.arch }}/ .
 
-  pr-docker-contributor:
+  pr-docker-contributor-amd64:
     name: PR Docker contributor image
     runs-on: ubuntu-latest
     steps:
@@ -35,7 +36,7 @@ jobs:
           cd docker-contributor
           docker build --build-arg ARCH=amd64/ .
 
-  pr-docker-contributor:
+  pr-docker-contributor-arm64:
     name: PR Docker contributor image
     runs-on: ubuntu-latest
     steps:
