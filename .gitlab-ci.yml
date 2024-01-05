@@ -79,7 +79,9 @@ check-pr-contributor:
   script:
     - cd docker-contributor
     - docker pull $CONTRIBUTOR_IMAGE:${ARCH} || true
-    - docker build --build-arg ARCH=${ARCH}/ .
+    - export PARCH="$ARCH"
+    - if [ "$ARCH" = "arm64v8" ]; then PARCH=arm64; fi
+    - docker build --platform="linux/${PARCH}" --build-arg ARCH=${ARCH}/ .
 
 release-contributor-arch:
   <<: *registry_dockerhub
