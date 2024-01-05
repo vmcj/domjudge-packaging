@@ -23,5 +23,5 @@ jobs:
       - name: Build container for $arch
         run: |
           cd docker-contributor
-          docker build --build-arg ARCH=${ARCH}/ .
+          docker build --build-arg ARCH=${{ matrix.arch }}/ .
 
