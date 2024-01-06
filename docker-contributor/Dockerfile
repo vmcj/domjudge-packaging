@@ -19,25 +19,74 @@ ENV DEBIAN_FRONTEND=noninteractive \
   APTINSTALL="apt install -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold"
 
 # Install required packages and clean up afterwards to make this image layer smaller
-RUN apt update \
-    && apt install --no-install-recommends --no-install-suggests -y \
-    dumb-init autoconf automake git acl \
-    gcc g++ make zip unzip mariadb-client \
-    nginx php8.1 php8.1-cli php8.1-fpm php8.1-zip \
-    php8.1-gd php8.1-curl php8.1-mysql php8.1-intl \
-    php8.1-gmp php8.1-xml php8.1-mbstring php8.1-xdebug php8.1-pcov \
-    bsdmainutils ntp lsof \
-    linuxdoc-tools linuxdoc-tools-text groff \
-    python3-sphinx python3-sphinx-rtd-theme python3-pip fontconfig python3-yaml \
-    texlive-latex-recommended texlive-latex-extra \
-    texlive-fonts-recommended texlive-lang-european latexmk \
-    sudo debootstrap libcgroup-dev procps \
-    default-jre-headless default-jdk \
-    supervisor apache2-utils lsb-release \
-    libcurl4-gnutls-dev libjsoncpp-dev libmagic-dev \
-    enscript lpr ca-certificates less vim \
-    php-pear php-dev software-properties-common python3-pygments rst2pdf gpg-agent tex-gyre \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt update
+RUN apt install --no-install-recommends --no-install-suggests -y dumb-init
+RUN apt install --no-install-recommends --no-install-suggests -y autoconf
+RUN apt install --no-install-recommends --no-install-suggests -y automake
+RUN apt install --no-install-recommends --no-install-suggests -y git
+RUN apt install --no-install-recommends --no-install-suggests -y acl
+RUN apt install --no-install-recommends --no-install-suggests -y gcc
+RUN apt install --no-install-recommends --no-install-suggests -y g++
+RUN apt install --no-install-recommends --no-install-suggests -y make
+RUN apt install --no-install-recommends --no-install-suggests -y zip
+RUN apt install --no-install-recommends --no-install-suggests -y unzip
+RUN apt install --no-install-recommends --no-install-suggests -y mariadb-client
+RUN apt install --no-install-recommends --no-install-suggests -y nginx
+RUN apt install --no-install-recommends --no-install-suggests -y php8.1
+RUN apt install --no-install-recommends --no-install-suggests -y php8.1-cli
+RUN apt install --no-install-recommends --no-install-suggests -y php8.1-fpm
+RUN apt install --no-install-recommends --no-install-suggests -y php8.1-zip
+RUN apt install --no-install-recommends --no-install-suggests -y php8.1-gd
+RUN apt install --no-install-recommends --no-install-suggests -y php8.1-curl
+RUN apt install --no-install-recommends --no-install-suggests -y php8.1-mysql
+RUN apt install --no-install-recommends --no-install-suggests -y php8.1-intl
+RUN apt install --no-install-recommends --no-install-suggests -y php8.1-gmp
+RUN apt install --no-install-recommends --no-install-suggests -y php8.1-xml
+RUN apt install --no-install-recommends --no-install-suggests -y php8.1-mbstring
+RUN apt install --no-install-recommends --no-install-suggests -y php8.1-xdebug
+RUN apt install --no-install-recommends --no-install-suggests -y php8.1-pcov
+RUN apt install --no-install-recommends --no-install-suggests -y bsdmainutils
+RUN apt install --no-install-recommends --no-install-suggests -y ntp
+RUN apt install --no-install-recommends --no-install-suggests -y lsof
+RUN apt install --no-install-recommends --no-install-suggests -y linuxdoc-tools
+RUN apt install --no-install-recommends --no-install-suggests -y linuxdoc-tools-text
+RUN apt install --no-install-recommends --no-install-suggests -y groff
+RUN apt install --no-install-recommends --no-install-suggests -y python3-sphinx
+RUN apt install --no-install-recommends --no-install-suggests -y python3-sphinx-rtd-theme
+RUN apt install --no-install-recommends --no-install-suggests -y python3-pip
+RUN apt install --no-install-recommends --no-install-suggests -y fontconfig
+RUN apt install --no-install-recommends --no-install-suggests -y python3-yaml
+RUN apt install --no-install-recommends --no-install-suggests -y texlive-latex-recommended
+RUN apt install --no-install-recommends --no-install-suggests -y texlive-latex-extra
+RUN apt install --no-install-recommends --no-install-suggests -y texlive-fonts-recommended
+RUN apt install --no-install-recommends --no-install-suggests -y texlive-lang-european
+RUN apt install --no-install-recommends --no-install-suggests -y latexmk
+RUN apt install --no-install-recommends --no-install-suggests -y sudo
+RUN apt install --no-install-recommends --no-install-suggests -y debootstrap
+RUN apt install --no-install-recommends --no-install-suggests -y libcgroup-dev
+RUN apt install --no-install-recommends --no-install-suggests -y procps
+RUN apt install --no-install-recommends --no-install-suggests -y default-jre-headless
+RUN apt install --no-install-recommends --no-install-suggests -y default-jdk
+RUN apt install --no-install-recommends --no-install-suggests -y supervisor
+RUN apt install --no-install-recommends --no-install-suggests -y apache2-utils
+RUN apt install --no-install-recommends --no-install-suggests -y lsb-release
+RUN apt install --no-install-recommends --no-install-suggests -y libcurl4-gnutls-dev
+RUN apt install --no-install-recommends --no-install-suggests -y libjsoncpp-dev
+RUN apt install --no-install-recommends --no-install-suggests -y libmagic-dev
+RUN apt install --no-install-recommends --no-install-suggests -y enscript
+RUN apt install --no-install-recommends --no-install-suggests -y lpr
+RUN apt install --no-install-recommends --no-install-suggests -y ca-certificates
+RUN apt install --no-install-recommends --no-install-suggests -y less
+RUN apt install --no-install-recommends --no-install-suggests -y vim
+RUN apt install --no-install-recommends --no-install-suggests -y php-pear
+RUN apt install --no-install-recommends --no-install-suggests -y php-dev
+RUN apt install --no-install-recommends --no-install-suggests -y software-properties-common
+RUN apt install --no-install-recommends --no-install-suggests -y python3-pygments
+RUN apt install --no-install-recommends --no-install-suggests -y rst2pdf
+RUN apt install --no-install-recommends --no-install-suggests -y gpg-agent
+RUN apt install --no-install-recommends --no-install-suggests -y tex-gyre
+
+RUN rm -rf /var/lib/apt/lists/*
 
 # Forward nginx request and error logs to standard output/error. Also create directory for PHP-FPM socket
 RUN ln -sf /dev/stdout /var/log/nginx/access.log \
