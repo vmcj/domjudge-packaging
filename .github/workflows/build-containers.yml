@@ -50,18 +50,6 @@ jobs:
           cd docker-contributor
           docker build --build-arg ARCH=arm64v8/ .
 
-  pr-docker-contributor-arm64-platform:
-    name: PR Docker contributor image (platform arm64v8)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build container for hardcoded arm64v8
-        run: |
-          cd docker-contributor
-          # This fails
-          /bin/true
-          docker build --platform linux/arm64 --build-arg ARCH=arm64v8/ .
-
   pr-docker-contributor-arm64-buildx-platform-binfmt:
     name: PR Docker contributor image (buildx arm64v8)
     runs-on: ubuntu-latest
