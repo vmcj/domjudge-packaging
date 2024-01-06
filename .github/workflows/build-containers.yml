@@ -27,19 +27,6 @@ jobs:
           cd docker-contributor
           docker build --build-arg ARCH=${{ matrix.arch }}/ .
 
-  pr-docker-contributor-buildx:
-    name: PR Docker contributor image (Buildx)
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: [arm64v8]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build container for ${{ matrix.arch }}
-        run: |
-          cd docker-contributor
-          docker buildx build --build-arg ARCH=${{ matrix.arch }}/ .
-
   pr-docker-contributor-arm64-binfmt:
     name: PR Docker contributor image (binfmt arm64v8)
     runs-on: ubuntu-latest
