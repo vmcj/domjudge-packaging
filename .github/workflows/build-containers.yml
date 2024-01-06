@@ -27,7 +27,7 @@ jobs:
           docker build --build-arg ARCH=${{ matrix.arch }}/ .
 
   pr-docker-contributor-amd64:
-    name: PR Docker contributor image (HC: amd64)
+    name: PR Docker contributor image (HC amd64)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -37,7 +37,7 @@ jobs:
           docker build --build-arg ARCH=amd64/ .
 
   pr-docker-contributor-arm64:
-    name: PR Docker contributor image (HC: arm64v8)
+    name: PR Docker contributor image (HC arm64v8)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
