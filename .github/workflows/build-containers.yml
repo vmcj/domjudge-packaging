@@ -11,6 +11,10 @@ on:
     branches-ignore:
       - main
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   pr-docker-contributor:
     name: PR Docker contributor image
