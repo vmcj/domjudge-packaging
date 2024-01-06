@@ -1,14 +1,14 @@
-name: 'Build docker containers'
+name: 'Build docker containers (PR)'
 
 on:
   push:
-    branches:
+    branches-ignore:
       - main
   pull_request:
-    branches:
+    branches-ignore:
       - main
   pull_request_target:
-    branches:
+    branches-ignore:
       - main
 
 jobs:
@@ -17,35 +17,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch: [arm64v8]
+        arch: [arm64, arm64v8]
     steps:
       - uses: actions/checkout@v2
       - name: Build container for ${{ matrix.arch }}
         run: |
-          /bin/true
-          exit 0
+          if [ "${{ matrix.arch }} = "arm64v8" ]; then
+            docker run --privileged --rm tonistiigi/binfmt --install all
+          fi
           cd docker-contributor
           docker build --build-arg ARCH=${{ matrix.arch }}/ .
-
-  pr-docker-contributor-arm64-binfmt:
-    name: PR Docker contributor image (binfmt arm64v8)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build container for hardcoded arm64v8
-        run: |
-          docker run --privileged --rm tonistiigi/binfmt --install all
-          cd docker-contributor
-          docker build --build-arg ARCH=arm64v8/ .
-
-  pr-docker-contributor-arm64-buildx-platform-binfmt:
-    name: PR Docker contributor image (buildx arm64v8)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build container for hardcoded arm64v8
-        run: |
-          docker run --privileged --rm tonistiigi/binfmt --install all
-          cd docker-contributor
-          docker buildx build --platform linux/arm64 --build-arg ARCH=arm64v8/ .
-
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: "{{defaultContext}}:docker-contributor"
+          push: true
+          tags: domjudge/contributor-pr:latest
