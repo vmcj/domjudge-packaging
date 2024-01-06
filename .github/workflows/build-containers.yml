@@ -1,4 +1,4 @@
-name: 'Build docker containers (PR)'
+name: 'Build docker containers'
 
 on:
   push:
@@ -22,14 +22,15 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build container for ${{ matrix.arch }}
         run: |
+          exit 0
           if [ "${{ matrix.arch }} = "arm64v8" ]; then
             docker run --privileged --rm tonistiigi/binfmt --install all
           fi
           cd docker-contributor
           docker build --build-arg ARCH=${{ matrix.arch }}/ .
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          context: "{{defaultContext}}:docker-contributor"
-          push: true
-          tags: domjudge/contributor-pr:latest
+      #- name: Build and push
+      #  uses: docker/build-push-action@v5
+      #  with:
+      #    context: "{{defaultContext}}:docker-contributor"
+      #    push: true
+      #    tags: domjudge/contributor-pr:latest

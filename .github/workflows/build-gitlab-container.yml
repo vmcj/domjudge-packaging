@@ -1,0 +1,25 @@
+name: 'Build GitLab CI container (PR)'
+
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+    branches-ignore:
+      - main
+  pull_request_target:
+    branches-ignore:
+      - main
+
+jobs:
+  pr-gitlab:
+    name: PR GitLab image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: "./docker-gitlabci" 
+          push: false
+          tags: domjudge/contributor-pr:latest
