@@ -58,6 +58,8 @@ jobs:
       - name: Build container for hardcoded arm64v8
         run: |
           cd docker-contributor
+          # This fails
+          /bin/true
           docker build --platform linux/arm64 --build-arg ARCH=arm64v8/ .
 
   pr-docker-contributor-arm64-buildx-platform-binfmt:
