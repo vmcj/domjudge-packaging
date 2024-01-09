@@ -40,7 +40,7 @@ jobs:
         id: setvars
         run: |
           if [[ "${{github.base_ref}}" == "main" || "${{github.ref}}" == "refs/heads/main" ]]; then
-            echo "tags=latest" >> $GITHUB_OUTPUT
+            echo "tags=${{ env.REGISTRY }}/domjudge/gitlabci:latest" >> $GITHUB_OUTPUT
           else
             echo "tags=${{ steps.meta.outputs.tags }}" >> $GITHUB_OUTPUT
           fi
