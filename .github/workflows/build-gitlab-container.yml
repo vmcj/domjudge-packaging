@@ -23,12 +23,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Log in to the Container registry
+      - name: Log in to GitHub Container registry (possibly at fork)
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to Docker Container registry
+        if: github.ref == 'refs/heads/main'
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -40,7 +47,7 @@ jobs:
         id: setvars
         run: |
           if [[ "${{github.base_ref}}" == "main" || "${{github.ref}}" == "refs/heads/main" ]]; then
-            echo "tags=${{ env.REGISTRY }}/domjudge/gitlabci:latest" >> $GITHUB_OUTPUT
+            echo "tags=domjudge/gitlabci:22.04" >> $GITHUB_OUTPUT
           else
             echo "tags=${{ steps.meta.outputs.tags }}" >> $GITHUB_OUTPUT
           fi
