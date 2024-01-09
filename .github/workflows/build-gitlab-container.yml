@@ -40,9 +40,9 @@ jobs:
         id: setvars
         run: |
           if [[ "${{github.base_ref}}" == "main" || "${{github.ref}}" == "refs/heads/main" ]]; then
-            echo "::set-output name=tags::latest"
+            echo "tags=latest" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=tags::${{ steps.setvars.outputs.tags }}"
+            echo "tags=${{ steps.meta.outputs.tags }}" >> $GITHUB_OUTPUT
           fi
 
       - name: Build and push Docker images
