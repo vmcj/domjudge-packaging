@@ -1,4 +1,4 @@
-name: 'Build development contributor container (PR)'
+name: 'Build Contributor container (PR)'
 
 on:
   push:
@@ -14,8 +14,11 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  pr-gitlab:
-    name: PR GitLab image
+  pr-contributor:
+    strategy:
+      matrix:
+        arch: [amd64, arm64v8]
+    name: PR Contributor image
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -23,12 +26,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Log in to the Container registry
+      - name: Log in to GitHub Container registry (possibly at fork)
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to Docker Container registry
+        if: github.ref == 'refs/heads/main'
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -36,10 +46,19 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
 
+      - name: Add extra tag when this is merged
+        id: setvars
+        run: |
+          if [[ "${{github.base_ref}}" == "main" || "${{github.ref}}" == "refs/heads/main" ]]; then
+            echo "tags=domjudge/domjudge-contributor:${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          else
+            echo "tags=${{ steps.meta.outputs.tags }}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build and push Docker images
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
         with:
           context: "./docker-contributor" 
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.setvars.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
