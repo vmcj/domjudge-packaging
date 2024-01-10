@@ -23,6 +23,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Use the same PHP config as the contributor containers
+        run: cp -r docker-{contributor,gitlabci}/php-config
+
       - name: Log in to GitHub Container registry (possibly at fork)
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
