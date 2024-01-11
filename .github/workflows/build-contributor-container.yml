@@ -57,12 +57,12 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        if: github.ref == 'refs/heads/main' && github.repository == 'domjudge/domjudge-packaging'
-        id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: domjudge/domjudge-contributor
+      #- name: Extract metadata (tags, labels) for Docker
+      #  if: github.ref == 'refs/heads/main' && github.repository == 'domjudge/domjudge-packaging'
+      #  id: meta
+      #  uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+      #  with:
+      #    images: domjudge/domjudge-contributor
 
       - name: Add extra tag when this is merged
         id: setvars
