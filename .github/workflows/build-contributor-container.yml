@@ -100,8 +100,8 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-# Copied from: https://docs.docker.com/build/ci/github-actions/multi-platform/
-merge:
+  # Copied from: https://docs.docker.com/build/ci/github-actions/multi-platform/
+  merge:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: [build]
