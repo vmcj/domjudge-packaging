@@ -2,19 +2,13 @@ name: 'Build GitLab CI container (PR)'
 
 on:
   push:
-  pull_request:
-    branches:
-      - main
   pull_request_target:
     branches:
       - main
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
 jobs:
   pr-gitlab:
+    if: ${{ github.repository != domjudge/domjudge-packaging || github.ref != main }} 
     name: PR GitLab image
     runs-on: ubuntu-latest
     permissions:
@@ -33,32 +27,21 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Log in to Docker Container registry
-        if: github.ref == 'refs/heads/main'
-        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: ghcr.io/${{ github.repository }}
 
-      - name: Add extra tag when this is merged
-        id: setvars
-        run: |
-          if [[ "${{github.base_ref}}" == "main" || "${{github.ref}}" == "refs/heads/main" ]]; then
-            echo "tags=domjudge/gitlabci:22.04" >> $GITHUB_OUTPUT
-          else
-            echo "tags=${{ steps.meta.outputs.tags }}" >> $GITHUB_OUTPUT
-          fi
-
       - name: Build and push Docker images
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
         with:
           context: "./docker-gitlabci" 
           push: true
-          tags: ${{ steps.setvars.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: TODO list:
+        run: |
+          # Look at: https://docs.github.com/en/actions/using-jobs/using-concurrency
+          exit 0
