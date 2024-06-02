@@ -32,6 +32,15 @@ jobs:
     #        !contains(github.ref, 'gh-readonly-queue') &&
     #        (github.event_name == 'pull_request_target' ||
     #         github.event.pull_request.head.repo.full_name != github.repository) }}
+    # The intent is to never run on the readonly-queue
+    # And never run on the main branch (regardless of repo)
+    #   - Implying that we run on differently named branches
+    # If both of those conditions are met:
+    #   - Run on pull_requests
+    #if: ${{ !contains(github.ref, 'gh-readonly-queue') &&
+    #        github.ref != 'refs/heads/main' &&
+    #        (github.event_name == 'pull_request_target' ||
+    #         github.event.pull_request.head.repo.full_name != github.repository) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
