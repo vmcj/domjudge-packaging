@@ -10,6 +10,14 @@ env:
   DOMJUDGE_VERSION: M.m.p
 
 jobs:
+  pr-domjudge-q:
+    steps:
+      - name: "P"
+        run: echo "${{ !(github.repository == 'domjudge/domjudge-packaging' && github.ref == 'refs/heads/main') }}"
+      - name: "Q"
+        run: echo "${{ !contains(github.ref, 'gh-readonly-queue') }}"
+      - name: "R"
+        run: echo "${{ (github.event_name == 'pull_request_target' || github.event.pull_request.head.repo.full_name != github.repository) }}"
   pr-domjudge:
     if: ${{ !(github.repository == 'domjudge/domjudge-packaging' &&
               github.ref == 'refs/heads/main') &&
