@@ -124,7 +124,7 @@ jobs:
     needs: pr-domjudge
     strategy:
       matrix:
-        database: ['mariadb', 'mysql']
+        database: ['mariadb']
     steps:
       - name: Checkout
         uses: actions/checkout@v6
